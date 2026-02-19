@@ -1,6 +1,4 @@
-# 🚀 **Mina Mesa Testnet Node - COMPLETE FIXED GUIDE** 🚀
-
-## 📋 **FROM SCRATCH TO SYNC - VERIFIED WORKING COMMANDS**
+# 🚀 **Mina Mesa Testnet Node** 🚀
 
 ---
 
