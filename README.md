@@ -150,14 +150,6 @@ ls -la ~/keys-writable-fresh/
 ## 🚀 **STEP 8: START CONTAINER (FIXED WORKING COMMAND)**
 
 ```bash
-# Remove any old container
-docker stop mina-mesa-preflight 2>/dev/null
-docker rm mina-mesa-preflight 2>/dev/null
-
-# Make sure we're in the right directory
-cd ~
-
-# FINAL WORKING COMMAND - USE THIS EXACTLY
 docker run --name mina-mesa-preflight -d \
   -p 8302:8302 \
   --restart=always \
