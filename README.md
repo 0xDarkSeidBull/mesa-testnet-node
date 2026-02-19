@@ -1,8 +1,55 @@
 # 🚀 **Mina Mesa Testnet Node** 🚀
+## 🌟 **Welcome to the Mesa Testnet!**
 
+<img width="1567" height="601" alt="image" src="https://github.com/user-attachments/assets/450ee6e9-2fc4-4003-b16d-8a9e3fd4c428" />
 
 ---
 
+The **Mesa Upgrade** is Mina Protocol's next major hard fork, bringing significant improvements to the network including:
+- ✅ **Reduced slot time** (faster blocks)
+- ✅ **Expanded zkApp account update limits**
+- ✅ **Enhanced protocol performance**
+- ✅ **Greater developer flexibility**
+
+### 🎯 **Why Run a Mesa Testnet Node?**
+
+The Mesa Testnet is now **LIVE** and this is your chance to:
+- 🔧 **Test the upcoming hard fork** before mainnet
+- 🛠️ **Help validate protocol changes** and surface bugs early
+- 🌐 **Contribute to Mina's decentralization**
+- 🎁 **Position yourself for upcoming opportunities**
+
+---
+
+## ⭐ **IMPORTANT - READ THIS FIRST!**
+
+### 🔥 **What's Coming Next:**
+
+| Phase | Status | Description |
+|-------|--------|-------------|
+| **Mesa Testnet** | 🟢 **LIVE NOW** | Current phase - Pre-flight testing |
+| **Mesa Trail** | 🔜 Coming Soon | Extended testing environment |
+| **Trailblazers Program** | 🔜 Coming Soon | **Incentivized testing program** 🏆 |
+| **Post-Testnet Validation** | 🔜 Planned | Final validation phase |
+| **Devnet Upgrade** | 🔜 Planned | Pre-mainnet upgrade testing |
+
+### 🎁 **Why You Should Run a Node NOW:**
+
+✅ **Discord Role**: Running a node? Join the [#mesa-network-testing](https://discord.gg/minaprotocol) channel and get a special role!  
+✅ **Trailblazers Program**: Node operators and developers who participate now will have **higher chances of selection** for the upcoming incentivized program  
+✅ **Early Experience**: Be among the first to test Mesa features  
+✅ **Community Contribution**: Help shape Mina's future
+
+> 💡 **Pro Tip**: The earlier you join and actively test, the better your chances for upcoming opportunities!
+
+---
+
+## 📌 **Quick Links:**
+- 📢 **Discord**: [#mesa-testnet channel](https://discord.gg/minaprotocol)
+- 📚 **Official Blog**: [Mesa Testnet Live Announcement](https://minaprotocol.com/blog/mesa-testnet-live-the-next-step-in-minas-upcoming-hard-fork)
+- 📋 **Mesa Testing Plan**: [Full Breakdown](https://minaprotocol.com/blog/reaching-mesa-how-were-testing-minas-next-major-upgrade)
+
+---
 
 ## 💻 **MINIMUM SYSTEM REQUIREMENTS**
 
@@ -23,25 +70,13 @@ Your node can run successfully on the following minimum specifications:
 - Debian 11/12 ✓
 - Any Linux with Docker support ✓
 
-### ⚠️ **Important Notes:**
-- **4 GB RAM is minimum** - May run slow during initial sync
-- **40 GB storage minimum** - Blockchain grows over time
-- **2 cores minimum** - Sync will take longer but works
-- **Ubuntu 22.04 tested** - Works perfectly
-
 ---
 
-## 📊 **RESOURCE USAGE EXPECTATIONS:**
+## 🎉 **Ready? Let's Get Started!**
 
-| Phase | CPU Usage | RAM Usage | Storage |
-|-------|-----------|-----------|---------|
-| **Initial Sync** | 40-60% | 3-3.5 GB | 5-10 GB |
-| **Normal Operation** | 10-20% | 2-3 GB | 10-20 GB |
-| **Long term** | 10-15% | 2-3 GB | 30-40 GB |
+Follow the steps below to get your Mesa Testnet node up and running in **15-20 minutes**. Once synced, you'll be actively contributing to Mina's next major upgrade!
 
 ---
-
-
 
 ## 📧 **STEP 0: GET KEYS FROM TEAM**
 Team will send you email with:
@@ -422,6 +457,23 @@ For any issues, check the Troubleshooting section above or run:
 ```bash
 docker logs mina-mesa-preflight --tail 50
 ```
+
+## 🎯 **AFTER YOUR NODE IS SYNCED:**
+
+```bash
+# Join Discord and share:
+echo "✅ Mesa Testnet Node Running!"
+echo "PeerID: $(docker exec mina-mesa-preflight mina client status | grep 'Libp2p PeerID' | awk '{print $NF}')"
+echo "IP: $(curl -s ifconfig.me)"
+```
+
+Head over to **[Discord #mesa-network-testing](https://discord.gg/minaprotocol)** and:
+1. Share your node status
+2. Get your **Discord mesa-network-tester role** 🏷️
+3. <img width="354" height="287" alt="image" src="https://github.com/user-attachments/assets/a8a48f11-3d42-45c1-ad5c-b46c29317463" />
+4. Stay updated on **Trailblazers Program** launch
+5. Connect with other node operators
+
 
 ---
 
