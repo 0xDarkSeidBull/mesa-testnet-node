@@ -1,26 +1,22 @@
-# 🚀 **Mina Mesa Testnet Node - Complete Setup Guide** 🚀
+# 🚀 **Mina Mesa Testnet Node - COMPLETE FIXED GUIDE** 🚀
 
-## **📋 FROM SCRATCH TO SYNC - THE EXACT COMMANDS THAT WORKED PERFECTLY**
+## 📋 **FROM SCRATCH TO SYNC - VERIFIED WORKING COMMANDS**
 
 ---
 
-## **📧 STEP 0: GET KEYS FROM TEAM**
-
-### **Team will send you email with:**
+## 📧 **STEP 0: GET KEYS FROM TEAM**
+Team will send you email with:
 - `mina-mesa-network-bp27` (private key file)
 - `mina-mesa-network-bp27.pub` (public key file)
 - Usually as a ZIP attachment
 
 ---
 
-## **🔐 STEP 1: TRANSFER KEYS TO SERVER (SFTP)**
-
-### **From your local machine to VPS:**
+## 🔐 **STEP 1: TRANSFER KEYS TO SERVER (SFTP)**
 
 ```bash
 # On your LOCAL terminal (not server)
-# Use SFTP to transfer files
-sftp root@91.107.241.139
+sftp root@YOUR_SERVER_IP
 
 # Once connected, upload the ZIP file
 put mina-mesa-network-bp27.zip /root/
@@ -29,32 +25,30 @@ put mina-mesa-network-bp27.zip /root/
 exit
 ```
 
-### **Or use SCP (simpler):**
-
+**OR using SCP:**
 ```bash
-# On your LOCAL terminal
-scp mina-mesa-network-bp27.zip root@91.107.241.139:/root/
+scp mina-mesa-network-bp27.zip root@YOUR_SERVER_IP:/root/
 ```
 
 ---
 
-## **🔄 STEP 2: SYSTEM UPDATE (ON SERVER)**
+## 🔄 **STEP 2: SSH INTO SERVER & UPDATE**
 
 ```bash
-# SSH into your server first
-ssh root@91.107.241.139
+# SSH into your server
+ssh root@YOUR_SERVER_IP
 
-# Then run these commands
+# Update system
 sudo apt update && sudo apt upgrade -y
 ```
 
 ---
 
-## **📦 STEP 3: INSTALL DOCKER**
+## 📦 **STEP 3: INSTALL DOCKER & UNZIP**
 
 ```bash
 # Install Docker
-sudo apt install -y docker.io
+sudo apt install -y docker.io unzip
 sudo systemctl enable docker
 sudo systemctl start docker
 
@@ -64,7 +58,7 @@ docker --version
 
 ---
 
-## **🔑 STEP 4: SETUP KEYS FOLDER**
+## 🔑 **STEP 4: SETUP KEYS FOLDER**
 
 ```bash
 # Create keys directory
@@ -77,14 +71,17 @@ chmod 700 ~/keys
 
 ---
 
-## **📁 STEP 5: EXTRACT AND SETUP KEYS FROM EMAIL**
+## 📁 **STEP 5: EXTRACT AND SETUP KEYS FROM EMAIL**
 
 ```bash
-# Go to root directory where ZIP was uploaded
+# IMPORTANT: ZIP file is in /root, go there first
 cd /root
 
 # Extract the ZIP file
 unzip mina-mesa-network-bp27.zip
+
+# Check extracted files
+ls -la | grep mina-mesa
 
 # Copy files to keys folder with correct names
 cp mina-mesa-network-bp27 ~/keys/my-wallet
@@ -104,12 +101,10 @@ ls -la ~/keys/
 
 ---
 
-## **🔐 STEP 6: GENERATE LIBP2P KEY (CRITICAL!)**
+## 🔐 **STEP 6: GENERATE LIBP2P KEY (CRITICAL!)**
 
 ```bash
-# Note: Mina is NOT installed on host, so we generate inside container
-
-# Run temporary container to generate libp2p key
+# Generate libp2p key inside temporary container
 docker run -it --rm \
   -v ~/keys:/keys \
   --entrypoint /bin/bash \
@@ -118,19 +113,25 @@ docker run -it --rm \
 
 # Verify key was generated
 ls -la ~/keys/libp2p-key
-# Should show: -rw------- 1 root root 483 Feb 19 10:47 libp2p-key
+# Should show: -rw------- 1 root root 483 Feb 19 xx:xx libp2p-key
 ```
 
 ---
 
-## **📂 STEP 7: CREATE WRITABLE KEYS DIRECTORY**
+## 📂 **STEP 7: CREATE WRITABLE KEYS DIRECTORY**
 
 ```bash
-# Create fresh writable directory (container will use this)
+# Create fresh writable directory
 mkdir -p ~/keys-writable-fresh
 
-# Copy all keys to writable directory
+# Copy ALL keys to writable directory
 cp ~/keys/* ~/keys-writable-fresh/
+
+# Verify my-wallet was copied
+ls -la ~/keys-writable-fresh/my-wallet
+# If not showing, copy manually:
+cp ~/keys/my-wallet ~/keys-writable-fresh/ 2>/dev/null
+cp ~/keys/my-wallet.pub ~/keys-writable-fresh/ 2>/dev/null
 
 # Set correct permissions
 chmod 700 ~/keys-writable-fresh
@@ -139,19 +140,22 @@ chmod 600 ~/keys-writable-fresh/my-wallet
 chmod 644 ~/keys-writable-fresh/*.pub 2>/dev/null
 chmod 644 ~/keys-writable-fresh/*.peerid 2>/dev/null
 
-# Verify
+# Final verification
 ls -la ~/keys-writable-fresh/
-# Should show all key files with correct permissions
+# MUST SHOW: my-wallet, libp2p-key, my-wallet.pub, libp2p-key.peerid
 ```
 
 ---
 
-## **🚀 STEP 8: START CONTAINER (THE PERFECT WORKING COMMAND)**
+## 🚀 **STEP 8: START CONTAINER (FIXED WORKING COMMAND)**
 
 ```bash
-# Remove any old container if exists
+# Remove any old container
 docker stop mina-mesa-preflight 2>/dev/null
 docker rm mina-mesa-preflight 2>/dev/null
+
+# Make sure we're in the right directory
+cd ~
 
 # FINAL WORKING COMMAND - USE THIS EXACTLY
 docker run --name mina-mesa-preflight -d \
@@ -170,24 +174,28 @@ docker run --name mina-mesa-preflight -d \
 
 ---
 
-## **✅ STEP 9: VERIFY CONTAINER IS RUNNING**
+## ✅ **STEP 9: VERIFY CONTAINER IS RUNNING**
 
 ```bash
 # Check if container is running
 docker ps
-# Expected output: CONTAINER ID ... mina-mesa-preflight ... Up ... 0.0.0.0:8302->8302/tcp
+# Expected: CONTAINER ID ... mina-mesa-preflight ... Up ... 0.0.0.0:8302->8302/tcp
 
-# Check logs (wait 2-3 minutes)
-docker logs -f mina-mesa-preflight
-# Press Ctrl+C to stop following logs (container keeps running)
+# Wait 30 seconds then check logs
+sleep 30
+docker logs mina-mesa-preflight --tail 20
+# Should show "Loaded genesis ledger" and no errors
+
+# If container exited, check full logs:
+docker logs mina-mesa-preflight
 ```
 
 ---
 
-## **📊 STEP 10: MONITOR SYNC STATUS**
+## 📊 **STEP 10: MONITOR SYNC STATUS**
 
 ```bash
-# Basic status check (use this command frequently)
+# Basic status check (wait 2-3 minutes after start)
 docker exec -it mina-mesa-preflight mina client status | grep -E "Sync status|Block height|Peers"
 
 # Live watch (updates every 10 seconds)
@@ -199,16 +207,16 @@ docker exec -it mina-mesa-preflight mina client status
 
 ---
 
-## **📝 STEP 11: VIEW BLOCK SYNC LOGS**
+## 📝 **STEP 11: VIEW BLOCK SYNC LOGS**
 
 ```bash
-# See blocks being synced in real-time
+# See blocks being synced
 docker logs -f mina-mesa-preflight | grep -E "Saw block|Updating new available work|state_hash"
 ```
 
 ---
 
-## **💾 STEP 12: CREATE BACKUP (VERY IMPORTANT!)**
+## 💾 **STEP 12: CREATE BACKUP (VERY IMPORTANT!)**
 
 ```bash
 # Create backup with date stamp
@@ -226,41 +234,38 @@ ls -la ~/mina-backup-$(date +%Y%m%d)/
 
 ---
 
-## **🔍 STEP 13: GET YOUR NODE INFORMATION**
+## 🔍 **STEP 13: GET YOUR NODE INFORMATION**
 
 ```bash
 # Your IP address
 curl -s ifconfig.me
-# Output: 91.107.241.139
 
-# Your Peer ID
-docker exec mina-mesa-preflight mina client status | grep "Libp2p PeerID"
-# Output: 12D3KooWMBiwV7xmU1owHy51rtCw5SFYC4LY9E6V7bwckTqaRaMr
+# Your Peer ID (wait for node to start)
+docker exec mina-mesa-preflight mina client status 2>/dev/null | grep "Libp2p PeerID" || echo "Node starting..."
 
 # Your Block Producer Key
-docker exec mina-mesa-preflight mina client status | grep "Block producers running"
-# Output: B62qmgZQkjAFBZxGjDY6A7ZsGHaAGT8foiBah9bSptDjoXDbChryQAe
+docker exec mina-mesa-preflight mina client status 2>/dev/null | grep "Block producers running" || echo "Node starting..."
 ```
 
 ---
 
-## **🎯 STEP 14: UNDERSTAND SYNC PROGRESSION**
+## 🎯 **STEP 14: UNDERSTAND SYNC PROGRESSION**
 
-### **Phase 1: Bootstrap (Initial Sync)**
+**Phase 1: Bootstrap (Initial Sync)**
 ```
 Sync status: Bootstrap
 Block height: 0 → 10,000
 Peers: 3-5
 ```
 
-### **Phase 2: Catchup (Active Sync)**
+**Phase 2: Catchup (Active Sync)**
 ```
 Sync status: Catchup
 Block height: 10,000 → 32,918
 Peers: 10-20
 ```
 
-### **Phase 3: Synced (Complete!)**
+**Phase 3: Synced (Complete!)**
 ```
 Sync status: Synced
 Block height: 32,918
@@ -269,78 +274,49 @@ Peers: 15-25
 
 ---
 
-## **🛠️ STEP 15: USEFUL MANAGEMENT COMMANDS**
+## 🛠️ **STEP 15: TROUBLESHOOTING (FIXED)**
+
+| Problem | Solution |
+|---------|----------|
+| **`my-wallet not found`** | `cp ~/keys/my-wallet ~/keys-writable-fresh/` |
+| **`port 8302 already allocated`** | `docker stop $(docker ps -q --filter publish=8302)` |
+| **Container exits immediately** | `docker logs mina-mesa-preflight` (see exact error) |
+| **`permissions on /keys`** | `chmod 700 ~/keys-writable-fresh` |
+| **`libp2p key corrupted`** | Repeat Step 6 (generate fresh key) |
+| **`genesis ledger error`** | `rm -rf ~/.mina-config/genesis && docker restart mina-mesa-preflight` |
+| **Daemon not responding** | Wait 2-3 minutes, then check logs |
+
+---
+
+## ✅ **FINAL VERIFICATION CHECKLIST**
 
 ```bash
-# Quick status summary
-echo "=== NODE STATUS ===" && \
-echo "IP: $(curl -s ifconfig.me)" && \
-echo "PeerID: $(docker exec mina-mesa-preflight mina client status | grep 'Libp2p PeerID' | awk '{print $NF}')" && \
-docker exec mina-mesa-preflight mina client status | grep -E "Sync status|Block height|Peers"
-
-# Restart container
-docker restart mina-mesa-preflight
-
-# Stop container
-docker stop mina-mesa-preflight
-
-# Start container
-docker start mina-mesa-preflight
-
-# Remove container (if something goes wrong)
-docker rm -f mina-mesa-preflight
-
-# Check logs after restart
-docker logs -f mina-mesa-preflight
+# Run this to verify everything
+echo "=== VERIFICATION ==="
+echo "1. Docker installed: $(docker --version | head -1)"
+echo "2. Keys exist: $(ls -la ~/keys-writable-fresh/my-wallet 2>/dev/null | wc -l) files"
+echo "3. Container status: $(docker ps --filter name=mina-mesa-preflight --format 'table {{.Status}}' | tail -1)"
+echo "4. Port 8302: $(ss -tlnp | grep 8302 >/dev/null && echo 'OPEN' || echo 'CLOSED')"
+echo "==================="
 ```
 
 ---
 
-## **⚠️ STEP 16: TROUBLESHOOTING COMMON ISSUES**
+## 📌 **CRITICAL NOTES (READ CAREFULLY)**
 
-| Problem | Solution |
-|---------|----------|
-| `port 8302 already allocated` | `docker stop $(docker ps -q --filter publish=8302)` |
-| `permissions on /keys` | `chmod 700 ~/keys-writable-fresh` |
-| `libp2p key corrupted/password error` | Repeat Step 6 (generate fresh key) |
-| `genesis ledger error` | `rm -rf ~/.mina-config/genesis` and restart container |
-| `container exits immediately` | `docker logs mina-mesa-preflight` to see exact error |
-| `cannot access /keys/libp2p-key` | Check if file exists: `ls -la ~/keys-writable-fresh/libp2p-key` |
+1. **ZIP file location**: It's in `/root/`, NOT in `~/keys/`
+2. **Always verify** `my-wallet` exists in `~/keys-writable-fresh/` before starting container
+3. **Wait 2-3 minutes** after container start before checking status
+4. **If container exits**, always check logs first: `docker logs mina-mesa-preflight`
+5. **Password**: Use exactly `MeraStrongPassword123` for libp2p key
+6. **Block producer key**: No password (empty string)
 
 ---
 
-## **✅ FINAL CHECKLIST**
+## 🎉 **CONGRATULATIONS!**
 
-- [✅] Docker installed
-- [✅] Keys folder created
-- [✅] Email keys copied (my-wallet, my-wallet.pub)
-- [✅] Libp2p key generated
-- [✅] Writable keys directory ready
-- [✅] Container running
-- [✅] Port 8302 open
-- [✅] Peers connected (13+)
-- [✅] Sync status: Bootstrap/Catchup/Synced
-- [✅] Backup created
+Your Mina Mesa Testnet Node is now successfully running! The node will take 15-30 minutes to fully sync. Once `Sync status: Synced` appears, you're ready to produce blocks!
 
 ---
 
-
-## **📌 IMPORTANT NOTES**
-
-1. **Keys from Email** - Team sends `mina-mesa-network-bp27` and `.pub` files
-2. **Transfer via SFTP/SCP** - Upload to server before starting
-3. **Libp2p key** - Must be generated (not from email)
-4. **Password** - Use `MeraStrongPassword123` for libp2p key
-5. **Block producer key** - No password (empty string)
-6. **Container auto-restarts** - Even after system reboot
-
----
-
-## **🎉 CONGRATULATIONS!**
-
-**Your Mina Mesa Testnet Node is now successfully running!** 
-
-The node will take 15-30 minutes to fully sync. Once `Sync status: Synced` appears, you're ready to produce blocks!
-
----
-
+**📝 GitHub repo mein yeh updated version daal do!** 🔥
