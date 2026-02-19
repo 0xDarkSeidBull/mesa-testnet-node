@@ -1,5 +1,6 @@
 # 🚀 **Mina Mesa Testnet Node** 🚀
 
+
 ---
 
 ## 📧 **STEP 0: GET KEYS FROM TEAM**
@@ -85,7 +86,7 @@ ls -la | grep mina-mesa
 cp mina-mesa-network-bp27 ~/keys/my-wallet
 cp mina-mesa-network-bp27.pub ~/keys/my-wallet.pub
 
-# Optional: Remove ZIP file after extraction
+# 🟢 FIX: Remove ZIP file after extraction to clean up
 rm -f /root/mina-mesa-network-bp27.zip
 
 # Go to keys folder
@@ -125,7 +126,7 @@ ls -la ~/keys/libp2p-key
 # Create fresh writable directory
 mkdir -p ~/keys-writable-fresh
 
-# Copy ALL keys to writable directory (force copy)
+# 🟢 FIX: Force copy ALL keys to writable directory (suppress errors)
 cp -f ~/keys/* ~/keys-writable-fresh/ 2>/dev/null
 
 # Double-check my-wallet was copied
@@ -148,7 +149,7 @@ ls -la ~/keys-writable-fresh/
 
 ---
 
-## 🚀 **STEP 8: START CONTAINER (FIXED WORKING COMMAND)**
+## 🚀 **STEP 8: START CONTAINER IN BACKGROUND**
 
 ```bash
 # IMPORTANT: Make sure you're in /root directory
@@ -163,7 +164,7 @@ echo "Checking keys before container start..."
 ls -la ~/keys-writable-fresh/my-wallet || { echo "❌ ERROR: my-wallet missing!"; exit 1; }
 ls -la ~/keys-writable-fresh/libp2p-key || { echo "❌ ERROR: libp2p-key missing!"; exit 1; }
 
-# FINAL WORKING COMMAND - USE THIS EXACTLY
+# 🟢 FINAL WORKING COMMAND - RUNS IN BACKGROUND (detached mode)
 docker run --name mina-mesa-preflight -d \
   -p 8302:8302 \
   --restart=always \
@@ -180,7 +181,8 @@ docker run --name mina-mesa-preflight -d \
 # Check if container started
 sleep 5
 if docker ps | grep -q mina-mesa-preflight; then
-    echo "✅ Container started successfully!"
+    echo "✅ Container started successfully in BACKGROUND mode!"
+    echo "You can close this terminal - node will keep running"
 else
     echo "❌ Container failed to start. Checking logs..."
     docker logs mina-mesa-preflight --tail 20
@@ -189,7 +191,7 @@ fi
 
 ---
 
-## ✅ **STEP 9: VERIFY CONTAINER IS RUNNING**
+## ✅ **STEP 9: VERIFY CONTAINER IS RUNNING IN BACKGROUND**
 
 ```bash
 # Check if container is running
@@ -214,14 +216,15 @@ fi
 ## 📊 **STEP 10: MONITOR SYNC STATUS**
 
 ```bash
-# IMPORTANT: Wait at least 2-3 minutes after container start
-echo "Waiting 2 minutes before status check..."
+# 🟢 FIX: Wait 2 minutes before first status check (important!)
+echo "Waiting 2 minutes for node to initialize..."
 sleep 120
 
 # Basic status check
 docker exec -it mina-mesa-preflight mina client status | grep -E "Sync status|Block height|Peers"
 
-# Live watch (updates every 10 seconds)
+# Live watch (updates every 10 seconds) - runs in foreground
+echo "Starting live monitor (Ctrl+C to stop)"
 watch -n 10 'docker exec mina-mesa-preflight mina client status | grep -E "Sync status|Block height|Peers"'
 
 # Full status if needed
@@ -264,22 +267,23 @@ ls -la $BACKUP_DIR/
 # Your IP address
 echo "Your IP: $(curl -s ifconfig.me)"
 
-# Wait for node to be ready before getting peer info
-echo "Waiting for node to initialize..."
+# 🟢 NOTE: Run this AFTER Step 9 shows "Daemon ready" in logs
+echo "Waiting for node to be ready..."
 sleep 30
 
 # Your Peer ID
 PEER_ID=$(docker exec mina-mesa-preflight mina client status 2>/dev/null | grep "Libp2p PeerID" | awk '{print $NF}')
 if [ -n "$PEER_ID" ]; then
-    echo "Your Peer ID: $PEER_ID"
+    echo "✅ Your Peer ID: $PEER_ID"
 else
-    echo "Node still starting... Check back in 2 minutes"
+    echo "⏳ Node still starting... Check back in 2 minutes"
+    echo "Run: docker logs mina-mesa-preflight | grep 'Daemon ready'"
 fi
 
 # Your Block Producer Key
 BP_KEY=$(docker exec mina-mesa-preflight mina client status 2>/dev/null | grep "Block producers running" | grep -o 'B62[a-zA-Z0-9]\+')
 if [ -n "$BP_KEY" ]; then
-    echo "Your Block Producer Key: $BP_KEY"
+    echo "✅ Your Block Producer Key: $BP_KEY"
 fi
 ```
 
@@ -322,7 +326,7 @@ Time: 20-30 minutes total
 | **Container exits immediately** | `docker logs mina-mesa-preflight --tail 50` to see exact error |
 | **`permissions on /keys`** | `chmod 700 ~/keys-writable-fresh && chmod 600 ~/keys-writable-fresh/*` |
 | **`libp2p key corrupted`** | `rm -f ~/keys/libp2p-key*` and repeat Step 6 |
-| **`genesis ledger error`** | `rm -rf ~/.mina-config/genesis && docker restart mina-mesa-preflight` |
+| **`genesis ledger error`** | 🟢 FIX: `rm -rf ~/.mina-config/* && docker restart mina-mesa-preflight` |
 | **`Cannot open file: /keys/my-wallet`** | `docker exec mina-mesa-preflight ls -la /keys/` to check |
 | **Daemon not responding** | `docker logs mina-mesa-preflight --tail 20` and wait 2-3 minutes |
 | **Container name already in use** | `docker rm -f mina-mesa-preflight` then repeat Step 8 |
@@ -349,12 +353,12 @@ echo "========================"
 
 1. **ZIP file location**: It's in `/root/`, NOT in `~/keys/`
 2. **Always verify** `my-wallet` exists in `~/keys-writable-fresh/` before starting container
-3. **Wait 2-3 minutes** after container start before checking status
+3. **Wait 2-3 minutes** after container start before checking status (Step 10 does this automatically)
 4. **If container exits**, always check logs first: `docker logs mina-mesa-preflight`
 5. **Password**: Use exactly `MeraStrongPassword123` for libp2p key
 6. **Block producer key**: No password (empty string)
-7. **Container runs in background**: Terminal band kar sakte ho, node chalega (`-d` flag ensures this)
-8. **Auto-restart**: Server reboot ke baad bhi container automatically start hoga
+7. **Container runs in BACKGROUND** (`-d` flag): Terminal band kar sakte ho, node chalega
+8. **Auto-restart**: Server reboot ke baad bhi container automatically start hoga (`--restart=always`)
 
 ---
 
@@ -364,7 +368,7 @@ echo "========================"
 # If node stops working, run these commands:
 docker stop mina-mesa-preflight
 docker rm mina-mesa-preflight
-rm -rf ~/.mina-config/genesis
+rm -rf ~/.mina-config/*
 # Then repeat STEP 8 only
 ```
 
@@ -372,7 +376,7 @@ rm -rf ~/.mina-config/genesis
 
 ## 🎉 **CONGRATULATIONS!**
 
-Your Mina Mesa Testnet Node is now successfully running! The node will take 15-30 minutes to fully sync. Once `Sync status: Synced` appears, you're ready to produce blocks!
+Your Mina Mesa Testnet Node is now successfully running in **BACKGROUND mode**! The node will take 15-30 minutes to fully sync. Once `Sync status: Synced` appears, you're ready to produce blocks!
 
 For any issues, check the Troubleshooting section above or run:
 ```bash
@@ -381,3 +385,4 @@ docker logs mina-mesa-preflight --tail 50
 
 ---
 
+**📝 GitHub repo mein yeh ULTIMATE FIXED version daal do!** 🔥
