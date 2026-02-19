@@ -3,6 +3,46 @@
 
 ---
 
+
+## 💻 **MINIMUM SYSTEM REQUIREMENTS**
+
+Your node can run successfully on the following minimum specifications:
+
+| Component | Minimum Requirement | Recommended |
+|-----------|-------------------|-------------|
+| **CPU** | 2 cores | 4+ cores |
+| **RAM** | 4 GB | 8+ GB |
+| **Storage** | 40 GB | 100+ GB |
+| **OS** | Ubuntu 22.04 LTS | Ubuntu 22.04/24.04 LTS |
+| **Network** | 1 Mbps | 10+ Mbps |
+| **Docker** | Latest version | Latest version |
+
+### ✅ **Works on:**
+- Ubuntu 22.04 LTS (Jammy) ✓
+- Ubuntu 24.04 LTS (Noble) ✓
+- Debian 11/12 ✓
+- Any Linux with Docker support ✓
+
+### ⚠️ **Important Notes:**
+- **4 GB RAM is minimum** - May run slow during initial sync
+- **40 GB storage minimum** - Blockchain grows over time
+- **2 cores minimum** - Sync will take longer but works
+- **Ubuntu 22.04 tested** - Works perfectly
+
+---
+
+## 📊 **RESOURCE USAGE EXPECTATIONS:**
+
+| Phase | CPU Usage | RAM Usage | Storage |
+|-------|-----------|-----------|---------|
+| **Initial Sync** | 40-60% | 3-3.5 GB | 5-10 GB |
+| **Normal Operation** | 10-20% | 2-3 GB | 10-20 GB |
+| **Long term** | 10-15% | 2-3 GB | 30-40 GB |
+
+---
+
+
+
 ## 📧 **STEP 0: GET KEYS FROM TEAM**
 Team will send you email with:
 - `mina-mesa-network-bp27` (private key file)
