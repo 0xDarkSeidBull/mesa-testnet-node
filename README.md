@@ -470,9 +470,11 @@ echo "IP: $(curl -s ifconfig.me)"
 Head over to **[Discord #mesa-network-testing](https://discord.gg/minaprotocol)** and:
 1. Share your node status
 2. Get your **Discord mesa-network-tester role** 🏷️
-3. <img width="354" height="287" alt="image" src="https://github.com/user-attachments/assets/a8a48f11-3d42-45c1-ad5c-b46c29317463" />
-4. Stay updated on **Trailblazers Program** launch
-5. Connect with other node operators
+
+  <img width="354" height="287" alt="image" src="https://github.com/user-attachments/assets/a8a48f11-3d42-45c1-ad5c-b46c29317463" />
+
+5. Stay updated on **Trailblazers Program** launch
+6. Connect with other node operators
 
 
 ---
